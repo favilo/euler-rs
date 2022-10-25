@@ -14,9 +14,15 @@ name = "euler"
 path = "src/main.rs"
 
 [dependencies]
+bit-set = "0.5.3"
+bit-vec = "0.6.3"
 clap = "4.0.18"
 color-eyre = "0.6.2"
 itertools = "0.10.5"
+mimalloc = { version = "0.1.30", default-features = false }
+ndarray = "0.15.6"
+nom = "7.1.1"
 num = "0.4.0"
+textwrap = "0.16.0"
 tracing = "0.1.37"
 tracing-subscriber = "0.3.16"
