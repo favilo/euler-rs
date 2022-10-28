@@ -1,16 +1,9 @@
-use std::str::FromStr;
+use std::iter::Product;
 
 use bit_set::BitSet;
 use bit_vec::BitVec;
-use ndarray::Array2;
-use nom::{
-    bytes::complete::{tag, take},
-    character::complete::{digit1, newline},
-    combinator::{map, map_res},
-    multi::{many1, many_till},
-    sequence::{pair, terminated},
-    IResult,
-};
+use itertools::Itertools;
+use num::{range_inclusive, BigUint, Integer, One, Zero};
 
 #[tracing::instrument]
 pub fn fibonacci() -> impl Iterator<Item = u64> {
@@ -48,26 +41,41 @@ pub fn is_palindrome(num: u64) -> bool {
     num.to_string() == num.to_string().chars().rev().collect::<String>()
 }
 
-fn value<T: FromStr>(input: &str) -> IResult<&str, T> {
-    let (input, v) = map_res(terminated(digit1, tag(" ")), |v: &str| v.parse())(input)?;
-    Ok((input, v))
+pub fn digits(num: BigUint) -> Vec<u64> {
+    let s: String = num.to_string();
+    s.chars().map(|c| c as u64 - '0' as u64).collect_vec()
 }
 
-fn row<T: FromStr>(input: &str) -> IResult<&str, Vec<T>> {
-    map(terminated(many_till(value, newline), newline), |v: ()| v)(input)
-    // map_res(many_till(pair(take(2), tag(" ")), newline), |row| {
-    //     row.into_iter().map(|v| T::try_from(v).unwrap())
-    // })(input)
+pub fn triangles() -> impl Iterator<Item = u64> {
+    (1..).map(|n| (n * (n + 1)) / 2)
 }
 
-pub fn parse_grid<T: FromStr + Copy>(input: &str) -> IResult<&str, Array2<T>> {
-    let (input, rows) = many1(row)(input)?;
-    let height = rows.len();
-    let width = rows[0].len();
-    let values = rows.into_iter().flatten().collect::<Vec<_>>();
+// pub fn collatz_chain(n: u64) -> impl Iterator<Item = u64> {
+//     iterate(n, |n: u64| if n.is_even() { n / 2 } else { 3 * n + 1 }).take_while(|n| n != 1)
+// }
 
-    Ok((
-        input,
-        Array2::from_shape_fn((width, height), |(i, j)| values[i * width + j]),
-    ))
+#[memoize::memoize]
+pub fn collatz_count(n: u64) -> u64 {
+    if n == 1 {
+        return 1;
+    }
+    fn next_collatz(n: u64) -> u64 {
+        if n.is_even() {
+            n / 2
+        } else {
+            3 * n + 1
+        }
+    }
+    1 + collatz_count(next_collatz(n))
+}
+
+pub fn factorial<N: Into<BigUint>>(num: N) -> BigUint {
+    fn inner(n: BigUint) -> BigUint {
+        if BigUint::zero() == n {
+            BigUint::one()
+        } else {
+            BigUint::product(range_inclusive(BigUint::one(), n).into_iter())
+        }
+    }
+    inner(num.into())
 }

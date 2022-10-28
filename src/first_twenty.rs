@@ -1,8 +1,16 @@
+use std::{cmp, str::FromStr};
+
+use chrono::{Datelike, Weekday};
 use color_eyre::eyre::eyre;
-use itertools::Itertools;
+use itertools::{zip, Itertools};
+use ndarray::indices;
+use num::{BigInt, BigUint};
 // use num::integer::sqrt;
 
-use crate::common::{fibonacci, is_palindrome, parse_grid, primes};
+use crate::{
+    common::{collatz_count, digits, factorial, fibonacci, is_palindrome, primes, triangles},
+    utils::{divisors::FactorCache, numbers::number_to_words, parse_grid, parse_triangle},
+};
 
 pub(crate) fn run(problem: u32) -> color_eyre::Result<u64> {
     Ok(match problem {
@@ -17,6 +25,15 @@ pub(crate) fn run(problem: u32) -> color_eyre::Result<u64> {
         9 => problem_9(),
         10 => problem_10(),
         11 => problem_11(),
+        12 => problem_12(),
+        13 => problem_13(),
+        14 => problem_14(),
+        15 => problem_15(),
+        16 => problem_16(),
+        17 => problem_17(),
+        18 => problem_18(),
+        19 => problem_19(),
+        20 => problem_20(),
         _ => Err(eyre!("Not defined yet"))?,
     })
 }
@@ -136,8 +153,135 @@ fn problem_11() -> u64 {
         04 42 16 73 38 25 39 11 24 94 72 18 08 46 29 32 40 62 76 36
         20 69 36 41 72 30 23 88 34 62 99 69 82 67 59 85 74 04 36 16
         20 73 35 29 78 31 90 01 74 31 49 71 48 86 81 16 23 57 05 54
-        01 70 54 71 83 51 54 69 16 92 33 48 61 43 52 01 89 19 67 48",
+        01 70 54 71 83 51 54 69 16 92 33 48 61 43 52 01 89 19 67 48
+        ",
     );
-    let grid = parse_grid::<u8>(&grid);
-    todo!()
+    let (_, grid) = parse_grid::<u64>(&grid).unwrap();
+    let (width, height) = grid.dim();
+    let horiz_product = grid
+        .windows((4, 1))
+        .into_iter()
+        .map(|window| window.product())
+        .max()
+        .unwrap();
+    let vert_product = grid
+        .windows((1, 4))
+        .into_iter()
+        .map(|window| window.product())
+        .max()
+        .unwrap();
+    let diag_product = indices((width - 4, height - 4))
+        .into_iter()
+        .map(|(x, y)| (0..4).map(|i| grid[(x + i, y + i)]).product::<u64>())
+        .max()
+        .unwrap();
+    let diag2_product = indices((width - 4, height - 4))
+        .into_iter()
+        .map(|(row, col)| (row, col + 4))
+        .map(|(row, col)| (0..4).map(|i| grid[(row + i, col - i)]).product::<u64>())
+        .max()
+        .unwrap();
+    [horiz_product, vert_product, diag_product, diag2_product]
+        .into_iter()
+        .max()
+        .unwrap()
+}
+
+fn problem_12() -> u64 {
+    let mut cache = FactorCache::new();
+    triangles()
+        .map(|n| (n, cache.count_divisors(n)))
+        .find_map(|(n, count)| (count > 500).then_some(n))
+        .unwrap()
+}
+
+fn problem_13() -> u64 {
+    let sum: BigInt = include_str!("../data/problem13.txt")
+        .lines()
+        .map(|l| BigInt::from_str(l).unwrap())
+        .sum();
+    sum.to_string()[..10].parse::<u64>().unwrap()
+}
+
+fn problem_14() -> u64 {
+    (1..1_000_000)
+        .map(|n| (n, collatz_count(n)))
+        .max_by(|x, y| x.1.cmp(&y.1))
+        .unwrap()
+        .0
+}
+
+fn problem_15() -> u64 {
+    let factorial_20 = factorial(20u64);
+    (factorial(40u64) / (&factorial_20 * &factorial_20))
+        .try_into()
+        .unwrap()
+}
+
+fn problem_16() -> u64 {
+    digits(BigUint::from(2u32).pow(1000)).into_iter().sum()
+}
+
+fn problem_17() -> u64 {
+    (1..=1000)
+        .map(|n| number_to_words(n).len() as u64)
+        .sum::<u64>()
+}
+
+fn problem_18() -> u64 {
+    let input = "\
+        75
+        95 64
+        17 47 82
+        18 35 87 10
+        20 04 82 47 65
+        19 01 23 75 03 34
+        88 02 77 73 07 63 67
+        99 65 04 28 06 16 70 92
+        41 41 26 56 83 40 80 70 33
+        41 48 72 33 47 32 37 16 94 29
+        53 71 44 65 25 43 91 52 97 51 14
+        70 11 33 28 77 73 17 78 39 68 17 57
+        91 71 52 38 17 14 91 43 58 50 27 29 48
+        63 66 04 68 89 53 67 30 73 16 69 87 40 31
+        04 62 98 27 23 09 70 98 73 93 38 53 60 04 23
+    ";
+    let (_, rows) = parse_triangle::<u64>(input).unwrap();
+    let mut sums: Vec<u64> = vec![];
+    for row in rows.into_iter().rev() {
+        let these_sums = if !sums.is_empty() {
+            assert_eq!(sums.len(), row.len());
+            row.iter().for_each(|v| print!("{v:4} "));
+            println!();
+            sums.into_iter().zip(&row).map(|(a, &b)| a + b).collect()
+        } else {
+            row
+        };
+        if these_sums.len() > 1 {
+            sums = these_sums
+                .iter()
+                .tuple_windows()
+                .map(|(a, b)| *cmp::max(a, b))
+                .collect::<Vec<_>>();
+            sums.iter().for_each(|v| print!("{v:4} "));
+        } else {
+            sums = these_sums;
+        }
+        println!();
+    }
+    sums[0]
+}
+
+fn problem_19() -> u64 {
+    (1901..=2000)
+        .map(|year| (1..=12).map(move |month| chrono::NaiveDate::from_ymd(year, month, 1)))
+        .flatten()
+        .filter(|date| date.weekday() == Weekday::Sun)
+        .count()
+        .try_into()
+        .unwrap()
+}
+
+fn problem_20() -> u64 {
+    digits(factorial(BigUint::from(100u64))).iter().sum()
 }

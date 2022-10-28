@@ -3,8 +3,9 @@ use std::time::Instant;
 
 use color_eyre::eyre::eyre;
 
-mod common;
+pub mod common;
 mod first_twenty;
+pub mod utils;
 
 pub fn run_problem(problem: u32) -> color_eyre::Result<()> {
     let start = Instant::now();

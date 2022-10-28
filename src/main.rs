@@ -17,7 +17,7 @@ fn main() -> color_eyre::Result<()> {
         .init();
 
     tracing::info!("Running Problem");
-    run_problem(11)?;
+    run_problem(20)?;
     tracing::info!("Finished running Problem");
 
     Ok(())

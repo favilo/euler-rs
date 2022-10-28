@@ -16,9 +16,11 @@ path = "src/main.rs"
 [dependencies]
 bit-set = "0.5.3"
 bit-vec = "0.6.3"
+chrono = "0.4.22"
 clap = "4.0.18"
 color-eyre = "0.6.2"
 itertools = "0.10.5"
+memoize = "0.3.1"
 mimalloc = { version = "0.1.30", default-features = false }
 ndarray = "0.15.6"
 nom = "7.1.1"
