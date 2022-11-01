@@ -1,44 +1,23 @@
 use std::{cmp, str::FromStr};
 
 use chrono::{Datelike, Weekday};
-use color_eyre::eyre::eyre;
-use itertools::{zip, Itertools};
+
+use itertools::Itertools;
 use ndarray::indices;
 use num::{BigInt, BigUint};
+
+use euler_macro::problem;
+use once_cell::sync::Lazy;
+use primes::{PrimeSet, Sieve};
 // use num::integer::sqrt;
 
 use crate::{
-    common::{collatz_count, digits, factorial, fibonacci, is_palindrome, primes, triangles},
+    common::{collatz_count, digits, factorial, fibonacci, is_palindrome, triangles},
     utils::{divisors::FactorCache, numbers::number_to_words, parse_grid, parse_triangle},
 };
 
-pub(crate) fn run(problem: u32) -> color_eyre::Result<u64> {
-    Ok(match problem {
-        1 => problem_1(),
-        2 => problem_2(),
-        3 => problem_3(),
-        4 => problem_4(),
-        5 => problem_5(),
-        6 => problem_6(),
-        7 => problem_7(),
-        8 => problem_8(),
-        9 => problem_9(),
-        10 => problem_10(),
-        11 => problem_11(),
-        12 => problem_12(),
-        13 => problem_13(),
-        14 => problem_14(),
-        15 => problem_15(),
-        16 => problem_16(),
-        17 => problem_17(),
-        18 => problem_18(),
-        19 => problem_19(),
-        20 => problem_20(),
-        _ => Err(eyre!("Not defined yet"))?,
-    })
-}
-
-fn problem_1() -> u64 {
+#[problem(1)]
+fn problem() -> u64 {
     let threes = (1..)
         .map(|i| i * 3)
         .filter(|n| n % 5 != 0)
@@ -47,6 +26,7 @@ fn problem_1() -> u64 {
     threes.chain(fives).sum()
 }
 
+#[problem(2)]
 fn problem_2() -> u64 {
     fibonacci()
         .take_while(|&f| f < 4_000_000)
@@ -54,10 +34,13 @@ fn problem_2() -> u64 {
         .sum()
 }
 
+#[problem(3)]
 fn problem_3() -> u64 {
     let check = 600851475143;
     let max = 775146;
-    let primes = primes(max).collect::<Vec<_>>();
+    let mut sieve = Sieve::new();
+    let primes = sieve.iter();
+    let primes = primes.take_while(|p| *p < max).collect::<Vec<_>>();
     primes
         .into_iter()
         .rev()
@@ -66,6 +49,7 @@ fn problem_3() -> u64 {
         .unwrap()
 }
 
+#[problem(4)]
 fn problem_4() -> u64 {
     itertools::iproduct!((100..1000).rev(), (100..1000).rev())
         .map(|(x, y)| x * y)
@@ -74,10 +58,12 @@ fn problem_4() -> u64 {
         .unwrap()
 }
 
+#[problem(5)]
 fn problem_5() -> u64 {
     (1..=20).fold(1, |x, y| num::integer::lcm(x, y))
 }
 
+#[problem(6)]
 fn problem_6() -> u64 {
     let squares: u64 = (1..=100).map(|n| n * n).sum();
     let sums: u64 = (1..=100).sum();
@@ -85,10 +71,14 @@ fn problem_6() -> u64 {
     sums - squares
 }
 
+#[problem(7)]
 fn problem_7() -> u64 {
-    primes(1_000_000).nth(10_000).unwrap()
+    let mut sieve = Sieve::new();
+
+    sieve.get(10_000)
 }
 
+#[problem(8)]
 fn problem_8() -> u64 {
     let digits = concat!(
         "73167176531330624919225119674426574742355349194934969835203127",
@@ -115,6 +105,7 @@ fn problem_8() -> u64 {
         .unwrap_or(0)
 }
 
+#[problem(9)]
 fn problem_9() -> u64 {
     for a in 1..998 {
         for b in a + 1..1000 {
@@ -127,10 +118,13 @@ fn problem_9() -> u64 {
     unreachable!()
 }
 
+#[problem(10)]
 fn problem_10() -> u64 {
-    primes(2_000_000).sum()
+    let mut p = Sieve::new();
+    p.iter().take_while(|p| p < &2_000_000).sum()
 }
 
+#[problem(11)]
 fn problem_11() -> u64 {
     let grid = textwrap::dedent(
         "\
@@ -187,6 +181,7 @@ fn problem_11() -> u64 {
         .unwrap()
 }
 
+#[problem(12)]
 fn problem_12() -> u64 {
     let mut cache = FactorCache::new();
     triangles()
@@ -195,6 +190,7 @@ fn problem_12() -> u64 {
         .unwrap()
 }
 
+#[problem(13)]
 fn problem_13() -> u64 {
     let sum: BigInt = include_str!("../data/problem13.txt")
         .lines()
@@ -203,6 +199,7 @@ fn problem_13() -> u64 {
     sum.to_string()[..10].parse::<u64>().unwrap()
 }
 
+#[problem(14)]
 fn problem_14() -> u64 {
     (1..1_000_000)
         .map(|n| (n, collatz_count(n)))
@@ -211,6 +208,7 @@ fn problem_14() -> u64 {
         .0
 }
 
+#[problem(15)]
 fn problem_15() -> u64 {
     let factorial_20 = factorial(20u64);
     (factorial(40u64) / (&factorial_20 * &factorial_20))
@@ -218,16 +216,19 @@ fn problem_15() -> u64 {
         .unwrap()
 }
 
+#[problem(16)]
 fn problem_16() -> u64 {
     digits(BigUint::from(2u32).pow(1000)).into_iter().sum()
 }
 
+#[problem(17)]
 fn problem_17() -> u64 {
     (1..=1000)
         .map(|n| number_to_words(n).len() as u64)
         .sum::<u64>()
 }
 
+#[problem(18)]
 fn problem_18() -> u64 {
     let input = "\
         75
@@ -251,8 +252,8 @@ fn problem_18() -> u64 {
     for row in rows.into_iter().rev() {
         let these_sums = if !sums.is_empty() {
             assert_eq!(sums.len(), row.len());
-            row.iter().for_each(|v| print!("{v:4} "));
-            println!();
+            // row.iter().for_each(|v| print!("{v:4} "));
+            // println!();
             sums.into_iter().zip(&row).map(|(a, &b)| a + b).collect()
         } else {
             row
@@ -263,15 +264,16 @@ fn problem_18() -> u64 {
                 .tuple_windows()
                 .map(|(a, b)| *cmp::max(a, b))
                 .collect::<Vec<_>>();
-            sums.iter().for_each(|v| print!("{v:4} "));
+            // sums.iter().for_each(|v| print!("{v:4} "));
         } else {
             sums = these_sums;
         }
-        println!();
+        // println!();
     }
     sums[0]
 }
 
+#[problem(19)]
 fn problem_19() -> u64 {
     (1901..=2000)
         .map(|year| (1..=12).map(move |month| chrono::NaiveDate::from_ymd(year, month, 1)))
@@ -282,6 +284,7 @@ fn problem_19() -> u64 {
         .unwrap()
 }
 
+#[problem(20)]
 fn problem_20() -> u64 {
     digits(factorial(BigUint::from(100u64))).iter().sum()
 }
