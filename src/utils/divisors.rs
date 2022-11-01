@@ -1,5 +1,6 @@
 use itertools::Itertools;
 use num::Integer;
+use tracing::info;
 
 use crate::common::primes;
 
@@ -40,6 +41,21 @@ impl FactorCache {
             .dedup_with_count()
             .fold(1, |accum, c| accum * (c.0 + 1));
         factor_counts as u64 + 1
+    }
+
+    pub(crate) fn sum_proper_divisors(&mut self, n: u64) -> u64 {
+        if n == 1 {
+            return 1;
+        }
+        let mut divisors = self
+            .factors(n)
+            .powerset()
+            .map(|ps| if ps.is_empty() { vec![1] } else { ps })
+            .map(|ps| ps.iter().product::<u64>())
+            .filter(|&p| p != n)
+            .collect_vec();
+        divisors.sort();
+        divisors.iter().dedup().sum()
     }
 }
 

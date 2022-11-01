@@ -5,6 +5,7 @@ use euler_trait::Problems;
 
 pub mod common;
 mod first_twenty;
+mod twenty_forty;
 pub mod utils;
 
 pub fn run_problem(problem: Option<usize>) -> color_eyre::Result<()> {
