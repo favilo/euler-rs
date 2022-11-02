@@ -10,9 +10,10 @@ use nom::{
     IResult,
 };
 
+pub mod dates;
 pub mod divisors;
 pub mod numbers;
-pub mod dates;
+pub mod strings;
 
 fn value<T: FromStr>(input: &str) -> IResult<&str, T, VerboseError<&str>> {
     let (input, v) = map_res(delimited(space0, digit1, space0), |v: &str| v.parse())(input)?;

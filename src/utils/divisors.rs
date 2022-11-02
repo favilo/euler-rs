@@ -1,3 +1,5 @@
+use std::iter::once;
+
 use itertools::Itertools;
 use num::Integer;
 use tracing::info;
@@ -44,8 +46,12 @@ impl FactorCache {
     }
 
     pub(crate) fn sum_proper_divisors(&mut self, n: u64) -> u64 {
+        self.proper_divisors(n).sum()
+    }
+
+    pub(crate) fn proper_divisors(&mut self, n: u64) -> Box<dyn Iterator<Item = u64>> {
         if n == 1 {
-            return 1;
+            return Box::new(once(1));
         }
         let mut divisors = self
             .factors(n)
@@ -55,7 +61,7 @@ impl FactorCache {
             .filter(|&p| p != n)
             .collect_vec();
         divisors.sort();
-        divisors.iter().dedup().sum()
+        Box::new(divisors.into_iter().dedup())
     }
 }
 
