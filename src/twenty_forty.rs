@@ -55,3 +55,18 @@ fn problem() -> u64 {
         })
         .sum::<usize>() as u64
 }
+
+#[problem(24)]
+fn permutations() -> u64 {
+    let mut perms = (0u32..10)
+        .permutations(10)
+        .map(|v| {
+            v.iter()
+                .map(|v| char::from_u32('0' as u32 + v).unwrap())
+                .collect::<String>()
+        })
+        .collect_vec();
+    perms.sort();
+
+    perms[999_999].parse().unwrap()
+}
