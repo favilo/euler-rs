@@ -2,7 +2,6 @@ use std::iter::once;
 
 use itertools::Itertools;
 use num::Integer;
-use tracing::info;
 
 use crate::common::primes;
 

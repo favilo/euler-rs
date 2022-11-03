@@ -7,9 +7,7 @@ use ndarray::indices;
 use num::{BigInt, BigUint};
 
 use euler_macro::problem;
-use once_cell::sync::Lazy;
 use primes::{PrimeSet, Sieve};
-// use num::integer::sqrt;
 
 use crate::{
     common::{collatz_count, digits, factorial, fibonacci, is_palindrome, triangles},
@@ -28,7 +26,7 @@ fn problem() -> u64 {
 
 #[problem(2)]
 fn problem_2() -> u64 {
-    fibonacci()
+    fibonacci::<u64>()
         .take_while(|&f| f < 4_000_000)
         .filter(|&f| f & 1 == 0)
         .sum()
@@ -218,7 +216,7 @@ fn problem_15() -> u64 {
 
 #[problem(16)]
 fn problem_16() -> u64 {
-    digits(BigUint::from(2u32).pow(1000)).into_iter().sum()
+    digits(&BigUint::from(2u32).pow(1000)).into_iter().sum()
 }
 
 #[problem(17)]
@@ -286,5 +284,5 @@ fn problem_19() -> u64 {
 
 #[problem(20)]
 fn problem_20() -> u64 {
-    digits(factorial(BigUint::from(100u64))).iter().sum()
+    digits(&factorial(BigUint::from(100u64))).iter().sum()
 }

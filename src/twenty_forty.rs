@@ -1,13 +1,16 @@
-use std::collections::HashSet;
-
 use bit_set::BitSet;
 use euler_macro::problem;
 use itertools::Itertools;
+use num::BigUint;
 use tracing::info;
 
-use crate::utils::{
-    divisors::FactorCache,
-    strings::{names, word_letter_score},
+use crate::{
+    common::{digits, fibonacci},
+    utils::{
+        divisors::FactorCache,
+        numbers::reciprocal_cycle_length,
+        strings::{names, word_letter_score},
+    },
 };
 
 #[problem(21)]
@@ -69,4 +72,24 @@ fn permutations() -> u64 {
     perms.sort();
 
     perms[999_999].parse().unwrap()
+}
+
+#[problem(25)]
+fn thousand_fibonacci() -> u64 {
+    let large_digit = fibonacci::<BigUint>()
+        .enumerate()
+        .skip_while(|(_, f)| digits(&f).len() < 1000)
+        .next()
+        .unwrap();
+    log::info!("{large_digit:?}");
+    (large_digit.0 + 1) as u64
+}
+
+#[problem(26)]
+fn reciprocal_cycles() -> u64 {
+    (2..1000)
+        .map(|n| (n, reciprocal_cycle_length(n)))
+        .max_by_key(|t| t.1)
+        .unwrap()
+        .0 as u64
 }

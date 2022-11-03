@@ -1,26 +1,24 @@
-use std::{
-    cell::{Cell, RefCell},
-    iter::Product,
-    sync::{Arc, Mutex},
-};
+use std::{fmt::Debug, iter::Product, ops::Add};
 
 use bit_set::BitSet;
 use bit_vec::BitVec;
 use itertools::Itertools;
 use num::{range_inclusive, BigUint, Integer, One, Zero};
-use once_cell::sync::Lazy;
-use ouroboros::self_referencing;
-use primes::{PrimeSet, PrimeSetIter, Sieve};
 
 #[tracing::instrument]
-pub fn fibonacci() -> impl Iterator<Item = u64> {
-    itertools::unfold((1, 2), |(x1, x2)| {
-        let next = *x1 + *x2;
+pub fn fibonacci<T>() -> impl Iterator<Item = T>
+where
+    T: Add<T>,
+    T: TryFrom<BigUint>,
+    <T as TryFrom<num::BigUint>>::Error: Debug,
+{
+    itertools::unfold((BigUint::from(1u64), BigUint::from(1u64)), |(x1, x2)| {
+        let next = x1.clone() + x2.clone();
 
-        let ret = *x1;
-        *x1 = *x2;
+        let ret = x1.clone();
+        *x1 = x2.clone();
         *x2 = next;
-        Some(ret)
+        Some(ret.try_into().unwrap())
     })
 }
 
@@ -48,7 +46,7 @@ pub fn is_palindrome(num: u64) -> bool {
     num.to_string() == num.to_string().chars().rev().collect::<String>()
 }
 
-pub fn digits(num: BigUint) -> Vec<u64> {
+pub fn digits(num: &BigUint) -> Vec<u64> {
     let s: String = num.to_string();
     s.chars().map(|c| c as u64 - '0' as u64).collect_vec()
 }

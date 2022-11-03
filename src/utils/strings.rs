@@ -23,3 +23,4 @@ pub fn letter_score(c: char) -> usize {
 pub fn word_letter_score(s: &str) -> usize {
     s.chars().map(letter_score).sum()
 }
+

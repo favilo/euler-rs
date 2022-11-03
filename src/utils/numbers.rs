@@ -86,3 +86,22 @@ mod tests {
         );
     }
 }
+
+pub fn reciprocal_cycle_length(denom: usize) -> usize {
+    let mut remainders = vec![None::<usize>; denom];
+    let mut idx = 0;
+    let mut check = 10;
+
+    loop {
+        let rem = check % denom;
+        if rem == 0 {
+            return 0;
+        }
+        if let Some(start) = remainders[rem] {
+            return idx - start;
+        }
+        remainders[rem] = Some(idx);
+        idx += 1;
+        check = rem * 10;
+    }
+}
