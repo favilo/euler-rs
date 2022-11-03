@@ -31,8 +31,8 @@ pub(crate) fn problem_inner(args: Args, f: ItemFn) -> TokenStream {
             pub(crate) struct #struct_name;
 
             impl euler_trait::Problem for #struct_name {
-                fn solve(&self) -> u64 {
-                    #fn_name()
+                fn solve(&self) -> Box<dyn std::fmt::Display> {
+                    Box::new(#fn_name())
                 }
 
                 fn problem(&self) -> usize {

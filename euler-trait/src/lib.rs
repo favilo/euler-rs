@@ -33,7 +33,7 @@ unsafe impl Send for _Problem {}
 inventory::collect!(_Problem);
 
 pub trait Problem: ProblemClone {
-    fn solve(&self) -> u64;
+    fn solve(&self) -> Box<dyn std::fmt::Display>;
     fn problem(&self) -> usize;
 }
 

@@ -1,3 +1,5 @@
+use primes::is_prime;
+
 const ONES: [&str; 10] = [
     "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
 ];
@@ -104,4 +106,11 @@ pub fn reciprocal_cycle_length(denom: usize) -> usize {
         idx += 1;
         check = rem * 10;
     }
+}
+
+pub fn quadratic_prime_run_length(a: i32, b: i32) -> usize {
+    (0i32..)
+        .map(|n| n.pow(2) + a * n + b)
+        .take_while(|&f| f > 0 && is_prime(f as u64))
+        .count()
 }

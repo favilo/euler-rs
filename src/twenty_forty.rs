@@ -1,6 +1,6 @@
 use bit_set::BitSet;
 use euler_macro::problem;
-use itertools::Itertools;
+use itertools::{iproduct, Itertools};
 use num::BigUint;
 use tracing::info;
 
@@ -8,7 +8,7 @@ use crate::{
     common::{digits, fibonacci},
     utils::{
         divisors::FactorCache,
-        numbers::reciprocal_cycle_length,
+        numbers::{quadratic_prime_run_length, reciprocal_cycle_length},
         strings::{names, word_letter_score},
     },
 };
@@ -81,7 +81,6 @@ fn thousand_fibonacci() -> u64 {
         .skip_while(|(_, f)| digits(&f).len() < 1000)
         .next()
         .unwrap();
-    log::info!("{large_digit:?}");
     (large_digit.0 + 1) as u64
 }
 
@@ -92,4 +91,14 @@ fn reciprocal_cycles() -> u64 {
         .max_by_key(|t| t.1)
         .unwrap()
         .0 as u64
+}
+
+#[problem(27)]
+fn quadratic_primes() -> i32 {
+    let (a, b, _s) = iproduct!(-999..1000, -1000..=1000)
+        .map(|(a, b)| (a, b, quadratic_prime_run_length(a, b)))
+        .filter(|&(_a, _b, s)| s != 0)
+        .max_by_key(|&(_, _, s)| s)
+        .unwrap();
+    a * b
 }
