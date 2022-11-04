@@ -102,3 +102,15 @@ fn quadratic_primes() -> i32 {
         .unwrap();
     a * b
 }
+
+#[problem(28)]
+fn number_spiral_diagonals() -> u64 {
+    (1..)
+        .map(|n| 2 * n + 1)
+        .map(|odd| (odd, odd * odd))
+        .take_while(|&(_, sq)| sq <= 1001 * 1001)
+        .map(|(odd, sq)| (0..4).map(move |i| sq - i * (odd - 1)))
+        .flatten()
+        .sum::<u64>()
+        + 1
+}
