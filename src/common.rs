@@ -87,9 +87,7 @@ pub fn factorial<N: Into<BigUint>>(num: N) -> BigUint {
 
 pub fn count_distinct_powers(a_max: u64, b_max: u64) -> u64 {
     let v = iproduct!(2..=a_max, 2..=b_max)
-        .map(|(a, b)| (a as f64).powf(b as f64))
-        // Transmute from float to u64 for just the bits
-        .map(|f| unsafe { std::mem::transmute::<_, u64>(f) })
+        .map(|(a, b)| (a as f64).powf(b as f64).to_bits())
         .collect::<HashSet<_>>();
     v.len() as _
 }
