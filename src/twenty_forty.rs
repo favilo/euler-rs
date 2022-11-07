@@ -72,7 +72,7 @@ fn permutations() -> u64 {
 fn thousand_fibonacci() -> u64 {
     let large_digit = fibonacci::<BigUint>()
         .enumerate()
-        .skip_while(|(_, f)| digits(&f).len() < 1000)
+        .skip_while(|(_, f)| digits(f.clone()).len() < 1000)
         .next()
         .unwrap();
     (large_digit.0 + 1) as u64
@@ -112,4 +112,12 @@ fn number_spiral_diagonals() -> u64 {
 #[problem(29)]
 fn distinct_powers() -> u64 {
     count_distinct_powers(100, 100)
+}
+
+#[problem(30)]
+fn digit_fifth_powers() -> u64 {
+    let fifths: Vec<u64> = (0..10u64).map(|n| n.pow(5u32)).collect_vec();
+    (10u64..200_000)
+        .filter(|&n| digits(n).iter().map(|&i| fifths[i as usize]).sum::<u64>() == n)
+        .sum()
 }

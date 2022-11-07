@@ -46,7 +46,8 @@ pub fn is_palindrome(num: u64) -> bool {
     num.to_string() == num.to_string().chars().rev().collect::<String>()
 }
 
-pub fn digits(num: &BigUint) -> Vec<u64> {
+pub fn digits(num: impl Into<BigUint>) -> Vec<u64> {
+    let num: BigUint = num.into();
     let s: String = num.to_string();
     s.chars().map(|c| c as u64 - '0' as u64).collect_vec()
 }

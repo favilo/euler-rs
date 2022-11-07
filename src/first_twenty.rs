@@ -216,7 +216,7 @@ fn problem_15() -> u64 {
 
 #[problem(16)]
 fn problem_16() -> u64 {
-    digits(&BigUint::from(2u32).pow(1000)).into_iter().sum()
+    digits(BigUint::from(2u32).pow(1000)).into_iter().sum()
 }
 
 #[problem(17)]
@@ -284,5 +284,5 @@ fn problem_19() -> u64 {
 
 #[problem(20)]
 fn problem_20() -> u64 {
-    digits(&factorial(BigUint::from(100u64))).iter().sum()
+    digits(factorial(BigUint::from(100u64))).iter().sum()
 }
