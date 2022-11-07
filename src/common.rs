@@ -1,8 +1,8 @@
-use std::{fmt::Debug, iter::Product, ops::Add};
+use std::{collections::HashSet, fmt::Debug, iter::Product, ops::Add};
 
 use bit_set::BitSet;
 use bit_vec::BitVec;
-use itertools::Itertools;
+use itertools::{iproduct, Itertools};
 use num::{range_inclusive, BigUint, Integer, One, Zero};
 
 #[tracing::instrument]
@@ -83,4 +83,13 @@ pub fn factorial<N: Into<BigUint>>(num: N) -> BigUint {
         }
     }
     inner(num.into())
+}
+
+pub fn count_distinct_powers(a_max: u64, b_max: u64) -> u64 {
+    let v = iproduct!(2..=a_max, 2..=b_max)
+        .map(|(a, b)| (a as f64).powf(b as f64))
+        // Transmute from float to u64 for just the bits
+        .map(|f| unsafe { std::mem::transmute::<_, u64>(f) })
+        .collect::<HashSet<_>>();
+    v.len() as _
 }

@@ -2,10 +2,9 @@ use bit_set::BitSet;
 use euler_macro::problem;
 use itertools::{iproduct, Itertools};
 use num::BigUint;
-use tracing::info;
 
 use crate::{
-    common::{digits, fibonacci},
+    common::{count_distinct_powers, digits, fibonacci},
     utils::{
         divisors::FactorCache,
         numbers::{quadratic_prime_run_length, reciprocal_cycle_length},
@@ -16,11 +15,6 @@ use crate::{
 #[problem(21)]
 fn problem() -> u64 {
     let mut cache = FactorCache::new();
-    info!(
-        "{}, {}",
-        cache.sum_proper_divisors(3),
-        cache.sum_proper_divisors(4),
-    );
     (1..10_000)
         .filter_map(|n| {
             let d = cache.sum_proper_divisors(n);
@@ -113,4 +107,9 @@ fn number_spiral_diagonals() -> u64 {
         .flatten()
         .sum::<u64>()
         + 1
+}
+
+#[problem(29)]
+fn distinct_powers() -> u64 {
+    count_distinct_powers(100, 100)
 }
