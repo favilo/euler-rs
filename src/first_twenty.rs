@@ -38,13 +38,8 @@ fn problem_3() -> u64 {
     let max = 775146;
     let mut sieve = Sieve::new();
     let primes = sieve.iter();
-    let primes = primes.take_while(|p| *p < max).collect::<Vec<_>>();
-    primes
-        .into_iter()
-        .rev()
-        .filter(|p| check % p == 0)
-        .next()
-        .unwrap()
+    let primes = primes.take_while(|p| *p < max).collect_vec();
+    primes.into_iter().rev().find(|p| check % p == 0).unwrap()
 }
 
 #[problem(4)]
@@ -58,7 +53,7 @@ fn problem_4() -> u64 {
 
 #[problem(5)]
 fn problem_5() -> u64 {
-    (1..=20).fold(1, |x, y| num::integer::lcm(x, y))
+    (1..=20).fold(1, num::integer::lcm)
 }
 
 #[problem(6)]
@@ -98,7 +93,7 @@ fn problem_8() -> u64 {
     .collect::<Vec<_>>();
     digits
         .array_windows::<13>()
-        .map(|a| a.into_iter().copied().product())
+        .map(|a| a.iter().copied().product())
         .max()
         .unwrap_or(0)
 }
@@ -274,8 +269,7 @@ fn problem_18() -> u64 {
 #[problem(19)]
 fn problem_19() -> u64 {
     (1901..=2000)
-        .map(|year| (1..=12).map(move |month| chrono::NaiveDate::from_ymd(year, month, 1)))
-        .flatten()
+        .flat_map(|year| (1..=12).map(move |month| chrono::NaiveDate::from_ymd(year, month, 1)))
         .filter(|date| date.weekday() == Weekday::Sun)
         .count()
         .try_into()

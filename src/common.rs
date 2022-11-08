@@ -80,7 +80,7 @@ pub fn factorial<N: Into<BigUint>>(num: N) -> BigUint {
         if BigUint::zero() == n {
             BigUint::one()
         } else {
-            BigUint::product(range_inclusive(BigUint::one(), n).into_iter())
+            BigUint::product(range_inclusive(BigUint::one(), n))
         }
     }
     inner(num.into())

@@ -8,7 +8,7 @@ use nom::{
     IResult,
 };
 
-pub(crate) fn name<'a>(input: &'a str) -> IResult<&'a str, String, VerboseError<&'a str>> {
+pub(crate) fn name(input: &str) -> IResult<&'_ str, String, VerboseError<&'_ str>> {
     map(delimited(tag("\""), alpha1, tag("\"")), ToOwned::to_owned)(input)
 }
 
@@ -23,4 +23,3 @@ pub fn letter_score(c: char) -> usize {
 pub fn word_letter_score(s: &str) -> usize {
     s.chars().map(letter_score).sum()
 }
-

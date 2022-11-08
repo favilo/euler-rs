@@ -6,6 +6,7 @@ use num::BigUint;
 use crate::{
     common::{count_distinct_powers, digits, fibonacci},
     utils::{
+        coins::coins_possible,
         divisors::FactorCache,
         numbers::{quadratic_prime_run_length, reciprocal_cycle_length},
         strings::{names, word_letter_score},
@@ -72,8 +73,7 @@ fn permutations() -> u64 {
 fn thousand_fibonacci() -> u64 {
     let large_digit = fibonacci::<BigUint>()
         .enumerate()
-        .skip_while(|(_, f)| digits(f.clone()).len() < 1000)
-        .next()
+        .find(|(_, f)| !digits(f.clone()).len() < 1000)
         .unwrap();
     (large_digit.0 + 1) as u64
 }
@@ -103,8 +103,7 @@ fn number_spiral_diagonals() -> u64 {
         .map(|n| 2 * n + 1)
         .map(|odd| (odd, odd * odd))
         .take_while(|&(_, sq)| sq <= 1001 * 1001)
-        .map(|(odd, sq)| (0..4).map(move |i| sq - i * (odd - 1)))
-        .flatten()
+        .flat_map(|(odd, sq)| (0..4).map(move |i| sq - i * (odd - 1)))
         .sum::<u64>()
         + 1
 }

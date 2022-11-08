@@ -17,7 +17,7 @@ impl FactorCache {
         Self { primes, max_prime }
     }
 
-    pub(crate) fn factors<'cache>(&'cache mut self, n: u64) -> Factors<'cache> {
+    pub(crate) fn factors(&mut self, n: u64) -> Factors<'_> {
         Factors {
             cache: self,
             curr: n,

@@ -8,7 +8,7 @@ impl Problems {
         Problems::collect()
             .into_iter()
             .find_map(|p| (p.problem() == i).then_some(p))
-            .expect(&format!("should have created problem {}", i))
+            .unwrap_or_else(|| panic!("should have created problem {i}"))
             .clone_box()
     }
 

@@ -23,10 +23,10 @@ const TENS: [&str; 9] = [
 
 pub fn number_to_words(n: u64) -> String {
     match n {
-        _ones if n < 10 => format!("{}", ONES[n as usize]),
+        _ones if n < 10 => ONES[n as usize].to_string(),
         _teens if n < 20 => {
             let ones = TEENS[(n as usize % 10)];
-            format!("{}", ones)
+            ones.to_string()
         }
         _tens if n < 100 => {
             let ones = n as usize % 10;
