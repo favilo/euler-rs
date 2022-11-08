@@ -120,3 +120,9 @@ fn digit_fifth_powers() -> u64 {
         .filter(|&n| digits(n).iter().map(|&i| fifths[i as usize]).sum::<u64>() == n)
         .sum()
 }
+
+#[problem(31)]
+fn coin_sums() -> u64 {
+    let coins = [200, 100, 50, 20, 10, 5, 2, 1];
+    coins_possible(200, &coins)
+}

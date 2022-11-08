@@ -10,6 +10,7 @@ use nom::{
     IResult,
 };
 
+pub mod coins;
 pub mod dates;
 pub mod divisors;
 pub mod numbers;
